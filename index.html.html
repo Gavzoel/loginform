@@ -1,0 +1,172 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Login</title>
+  <style>
+    body {
+      margin: 0;
+      font-family: Arial, sans-serif;
+      height: 100vh;
+      background-color: #f2f2f2;
+      overflow: hidden;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      padding: 20px;
+    }
+
+    .login-box {
+      background-color: white;
+      padding: 30px;
+      border-radius: 10px;
+      border: 4px solid #4CAF50;
+      box-shadow: 0 0 15px rgba(0, 0, 0, 0.2);
+      width: 100%;
+      max-width: 360px;
+      opacity: 0;
+      transform: translate(300px, -300px) scale(0.1) rotate(10deg);
+      animation: kertasMelayangMasuk 1.8s ease-out forwards;
+    }
+
+    @keyframes kertasMelayangMasuk {
+      0% {
+        opacity: 0;
+        transform: translate(300px, -300px) scale(0.1) rotate(10deg);
+      }
+      40% {
+        opacity: 0.7;
+        transform: translate(-20px, 10px) scale(1.05) rotate(-3deg);
+      }
+      70% {
+        opacity: 1;
+        transform: translate(10px, -5px) scale(0.98) rotate(2deg);
+      }
+      100% {
+        opacity: 1;
+        transform: translate(0, 0) scale(1) rotate(0deg);
+      }
+    }
+
+    .login-box h2 {
+      text-align: center;
+      margin-bottom: 20px;
+      font-size: 1.5em;
+    }
+
+    .form-group {
+      margin-bottom: 15px;
+    }
+
+    .form-group label {
+      display: block;
+      margin-bottom: 5px;
+      font-weight: bold;
+      font-size: 0.95em;
+    }
+
+    .form-group input {
+      width: 100%;
+      padding: 10px;
+      box-sizing: border-box;
+      border: 1px solid #ccc;
+      border-radius: 4px;
+      font-size: 1em;
+    }
+
+    .form-group button {
+      width: 100%;
+      padding: 12px;
+      background-color: #4CAF50;
+      color: white;
+      border: none;
+      cursor: pointer;
+      margin-top: 10px;
+      font-weight: bold;
+      font-size: 1em;
+    }
+
+    .form-group button:hover {
+      background-color: #45a049;
+    }
+
+    @media (max-width: 480px) {
+      .login-box {
+        padding: 20px;
+        border-width: 3px;
+      }
+
+      .login-box h2 {
+        font-size: 1.3em;
+      }
+
+      .form-group input,
+      .form-group button {
+        font-size: 0.95em;
+        padding: 10px;
+      }
+    }
+  </style>
+</head>
+<body>
+  <div class="login-box">
+    <h2>Form Login</h2>
+    <div class="form-group">
+      <label for="nama">Nama</label>
+      <input type="text" id="nama" name="nama" onkeyup="ambilStatus()" />
+    </div>
+    <div class="form-group">
+      <label for="status">Status</label>
+      <input type="text" id="status" name="status" readonly />
+    </div>
+    <div class="form-group">
+      <label for="password">Password</label>
+      <input type="password" id="password" name="password" />
+    </div>
+    <div class="form-group">
+      <button onclick="login()">Login</button>
+    </div>
+  </div>
+
+  <script>
+    const urlScript = 'https://script.google.com/macros/s/AKfycbwPwVmDkpHhbCEeAedVtFDcaTSAOPeT4l1je7G2n-mP0txsb3dSKMNuXiITgPHBQJvO/exec';
+
+    function ambilStatus() {
+      const nama = document.getElementById('nama').value;
+      if (nama.length < 3) return; // hanya mulai pencarian jika sudah 3 huruf
+      fetch(`${urlScript}?nama=${encodeURIComponent(nama)}`)
+        .then(res => res.text())
+        .then(status => {
+          document.getElementById('status').value = status || '';
+        })
+        .catch(err => {
+          console.error('Gagal ambil status:', err);
+          document.getElementById('status').value = '';
+        });
+    }
+
+    function login() {
+      const nama = document.getElementById('nama').value;
+      const password = document.getElementById('password').value;
+
+      fetch(urlScript, {
+        method: 'POST',
+        body: new URLSearchParams({ nama, password })
+      })
+      .then(res => res.json())
+      .then(data => {
+        if (data.login === 'sukses') {
+          alert(`Login berhasil! Status: ${data.status}`);
+          window.location.href = 'Utama.html'; // ganti ke halaman utama
+        } else {
+          alert('Login gagal. Periksa nama dan password.');
+        }
+      })
+      .catch(err => {
+        console.error('Gagal login:', err);
+      });
+    }
+  </script>
+</body>
+</html>
